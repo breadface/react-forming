@@ -1,5 +1,5 @@
 {
-  "name": "react-validate",
+  "name": "react-forming",
   "version": "0.0.1",
   "description": "A simple declarative library for react",
   "main": "index.js",
@@ -10,10 +10,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/breadface/react-validate.git"
+    "url": "git+https://github.com/breadface/react-forming.git"
   },
   "keywords": [
-    "react-validate",
+    "react-forming",
     "form-validation",
     "form-validator",
     "react-form-validation",
@@ -22,9 +22,9 @@
   "author": "Omonori Jesmine",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/breadface/react-validate/issues"
+    "url": "https://github.com/breadface/react-forming/issues"
   },
-  "homepage": "https://github.com/breadface/react-validate#readme",
+  "homepage": "https://github.com/breadface/react-forming#readme",
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.7.0",

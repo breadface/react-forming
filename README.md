@@ -1,4 +1,4 @@
-# react-validate
+# react-forming
 Validation Wrapper for React input elements
 
 ## Motivation
@@ -6,13 +6,13 @@ Validation Wrapper for React input elements
 
 # Quick Start
 
-`npm install --save react-validate or yarn add react-validate`
+`npm install --save react-forming or yarn add react-forming`
 
 #### Usage
 ```javascript
   import React from 'react'
-  import { FormWrapper, Input } from 'react-validate';
-  import {email, required} from 'react-validate/validation';
+  import { FormWrapper, Input } from 'react-forming';
+  import {email, required} from 'react-forming/validation';
 
   class SimpleForm extends React.Component {
     state = {
