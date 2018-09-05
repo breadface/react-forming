@@ -1,0 +1,39 @@
+{
+  "name": "react-validate",
+  "version": "0.0.1",
+  "description": "A simple declarative library for react",
+  "main": "index.js",
+  "scripts": {
+    "build": "babel src -d build",
+    "prepublish": "npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/breadface/react-validate.git"
+  },
+  "keywords": [
+    "react-validate",
+    "form-validation",
+    "form-validator",
+    "react-form-validation",
+    "react-validation"
+  ],
+  "author": "Omonori Jesmine",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/breadface/react-validate/issues"
+  },
+  "homepage": "https://github.com/breadface/react-validate#readme",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.16.0"
+  },
+  "dependencies": {
+    "prop-types": "^15.6.2",
+    "react": "^15.6.2",
+    "react-dom": "^15.6.2",
+    "validator": "^10.4.0"
+  }
+}
