@@ -7,48 +7,73 @@ const isEmpty = value => {
 };
 
 const notRequired = next => value => {
-  if (!isEmpty(value)) return next(value);
+  if (!isEmpty(value)) {
+    // return validate(value, next);
+    return next(value);
+  } else {
+    return {error: false};
+  }  
 };
 
 export const required = value => {
   if (isEmpty(value)) {
-    return true;
+    return {error: true};
+  } else {
+    return {error: false};
   }
 };
 
 export const email = notRequired(value => {
   if (!validator.isEmail(value)) {
-    return true;
+    return {error: true};
+  } else {
+    return {error: false};
   }
 });
 
 export const number = notRequired(value => {
   if (!/^\d+$/.test(value)) {
-    return true;
+    return { error: true};
+  } else {
+    return {error: false};
   }
 });
 
 export const passwordMatch = otherPassword =>
   notRequired(value => {
     if (otherPassword !== value) {
-      return true;
+      return {error: true};
+    } else {
+      return {error: false};
     }
   });
 
 export const maxLength = length =>
   notRequired(value => {
     if (value.toString().length > length) {
-      return true;
+      return {error: true};
+    } else {
+      return {error: false};
     }
   });
 
 export const minLength = length =>
   notRequired(value => {
     if (length > value.toString().length) {
-      return true;
+      return {error: true};
+    } else {
+      return {error: false};
     }
   });
 
 export const validate = (value, validations) => {
-  return validations.some(rules => Boolean(rules(value)));
+  const rules = Array.isArray(validations) ? validations : [validations];
+    //multiple validation against a field
+  return rules.map(validator => {
+    if (validator.rule) {
+      return { ...validator.rule(value), ...validator};
+    } else {
+      return validator(value);
+    }
+  }).filter(rule => rule.error);  
 };

@@ -2,19 +2,27 @@ import React from "react";
 import { validate } from "./validation";
 import InputWrapper from './InputWrapper';
 
-
-//TODO:: Might want to return a <form> wrapper
 export const FormWrapper = ({
   value,
   onChange,
   validators={},
   children,
-  errorClassName
+  onSubmit
 }) => {
-  const isInvalid = Object.entries(validators)
-    .map(([key, validations]) => {
-      return validate(value[key], validations);
-    }).some(Boolean);
+  const entriesWithErrors = Object.entries(validators)
+    .reduce((acc, [key, rules]) => {
+      let result = validate(value[key], rules);
+      acc[key] = result.map(rule => {
+        if (rule.message) {
+          return rule.message
+        } else {
+          return key;
+        }
+      }, {});
+      return acc;
+    }, {});
+
+  const isValid = !Object.entries(entriesWithErrors).some(([_, messages]) => messages.length);
 
   const getInputProps = field => {
     return {
@@ -25,9 +33,17 @@ export const FormWrapper = ({
       }
     }
   };
-  return children({getInputProps, isValid: !isInvalid});
-};
 
+  return(
+    <form
+      onSubmit={e => {
+        e.preventDefault();
+        onSubmit && onSubmit(e)
+      }}>
+        {children({getInputProps, isValid, errors: entriesWithErrors})}
+    </form>
+  );
+};
 
 //Input components
 export const Input = props => {
@@ -40,11 +56,12 @@ export const Input = props => {
 };
 
 export const Select = ({
-  optionValue,
-  optionLabel,
-  defaultOption,
+  type,
   items,
   children,
+  optionLabel,
+  optionValue,
+  defaultOption,
   ...rest
 }) => {
   const isString = value => typeof value === "string";
@@ -52,7 +69,7 @@ export const Select = ({
     <InputWrapper
       {...rest}
       children={props => (
-        <select {...props} type={undefined}>
+        <select {...props}>
           <option value="">{defaultOption || "Select an option"}</option>
           {items.map((item, index) => (
             <option
