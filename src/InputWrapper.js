@@ -75,6 +75,7 @@ export default class InputWrapper extends React.Component {
             });
             onBlur(e);
           },
+          value,
           className: inputClassName,
           ...rest
         })}
