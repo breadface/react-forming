@@ -1,86 +1,78 @@
 import React from "react";
 import { validate } from "./validation";
-import InputWrapper from './InputWrapper';
 
-export const FormWrapper = ({
-  value,
-  onChange,
-  validators={},
-  children,
-  onSubmit
-}) => {
-  const entriesWithErrors = Object.entries(validators)
-    .reduce((acc, [key, rules]) => {
+class FormWrapper extends React.Component {
+  state = {
+    hasSubmitted: false,
+    submitError: null
+  }
+
+  render() {
+    let {
+      value,
+      onChange,
+      validators={},
+      children,
+      onSubmit
+    } = this.props;
+
+    let { submitError, hasSubmitted } = this.state;
+
+    const errors =  {};
+    for (let [key, rules] of Object.entries(validators)) {
       let result = validate(value[key], rules);
-      acc[key] = result.map(rule => {
+      errors[key] = result.map(rule => {
         if (rule.message) {
           return rule.message
         } else {
           return key;
         }
-      }, {});
-      return acc;
-    }, {});
-
-  const isValid = !Object.entries(entriesWithErrors).some(([_, messages]) => messages.length);
-
-  const getInputProps = field => {
-    return {
-      value: value[field],
-      onChange: e => {
-        e.preventDefault();
-        onChange({...value, [field]: e.target.value});
-      }
+      });
     }
-  };
 
-  return(
-    <form
-      onSubmit={e => {
-        e.preventDefault();
-        onSubmit && onSubmit(e)
-      }}>
-        {children({getInputProps, isValid, errors: entriesWithErrors})}
-    </form>
-  );
-};
+    const disabled = Object.entries(errors).some(([_, messages]) => messages.length);
 
-//Input components
-export const Input = props => {
-  return (
-    <InputWrapper
-      {...props}
-      children={props => <input {...props}  />}
-    />
-  );
-};
+    let handleSubmit = async () => {
+      try {
+        if (disabled) {
+          return;
+        }
+        if (onSubmit) {
+          await onSubmit();
+          this.setState({ hasSubmitted: true });
+        }
+      } catch (err) {
+        this.setState({ submitError: err, hasSubmitted: false });
+      }
+    };
 
-export const Select = ({
-  type,
-  items,
-  children,
-  optionLabel,
-  optionValue,
-  defaultOption,
-  ...rest
-}) => {
-  const isString = value => typeof value === "string";
-  return (
-    <InputWrapper
-      {...rest}
-      children={props => (
-        <select {...props}>
-          <option value="">{defaultOption || "Select an option"}</option>
-          {items.map((item, index) => (
-            <option
-              key={index}
-              value={isString(item) ? item : item[optionValue]}
-            >
-              {isString(item) ? item : item[optionLabel]}
-            </option>
-          ))}
-        </select>
-      )}
-    />
-  );
-};
+    const getInputProps = field => {
+      return {
+        value: value[field],
+        onChange: (e) => {
+          e.preventDefault();
+          onChange({
+            ...value,
+            [field]: e.target.value
+          });
+        },
+        onKeyDown: (e) => {
+          if (e.which === 13) {
+            handleSubmit();
+          }
+        }
+      }
+    };
+
+    return children({
+      onSubmit: handleSubmit,
+      hasSubmitted,
+      getInputProps,
+      submitError,
+      disabled,
+      errors
+    });
+  }
+}
+
+export default FormWrapper;

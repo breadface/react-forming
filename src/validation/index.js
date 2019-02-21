@@ -6,74 +6,69 @@ const isEmpty = value => {
   return value.toString().trim().length === 0;
 };
 
-const notRequired = next => value => {
+export const notRequired = next => value => {
   if (!isEmpty(value)) {
     // return validate(value, next);
     return next(value);
   } else {
-    return {error: false};
-  }  
+    return { error: false };
+  }
 };
 
 export const required = value => {
-  if (isEmpty(value)) {
-    return {error: true};
-  } else {
-    return {error: false};
-  }
+  return {
+    error: isEmpty(value)
+  };
 };
 
 export const email = notRequired(value => {
-  if (!validator.isEmail(value)) {
-    return {error: true};
-  } else {
-    return {error: false};
-  }
+  return {
+    error: !validator.isEmail(value)
+  };
 });
 
 export const number = notRequired(value => {
-  if (!/^\d+$/.test(value)) {
-    return { error: true};
-  } else {
-    return {error: false};
+  return {
+    error: !/^\d+$/.test(value)
+  }
+});
+
+export const phoneNumber =  (locale) => notRequired(value => {
+  return {
+    error: !validator.isMobilePhone(value, locale)
   }
 });
 
 export const passwordMatch = otherPassword =>
   notRequired(value => {
-    if (otherPassword !== value) {
-      return {error: true};
-    } else {
-      return {error: false};
-    }
+    return {
+      error: otherPassword !== value
+    };
   });
 
 export const maxLength = length =>
   notRequired(value => {
-    if (value.toString().length > length) {
-      return {error: true};
-    } else {
-      return {error: false};
-    }
+    return {
+      error: value.toString().length > length
+    };
   });
 
 export const minLength = length =>
   notRequired(value => {
-    if (length > value.toString().length) {
-      return {error: true};
-    } else {
-      return {error: false};
-    }
+    return {
+      error: length > value.toString().length
+    };
   });
 
 export const validate = (value, validations) => {
   const rules = Array.isArray(validations) ? validations : [validations];
-    //multiple validation against a field
-  return rules.map(validator => {
-    if (validator.rule) {
-      return { ...validator.rule(value), ...validator};
-    } else {
-      return validator(value);
-    }
-  }).filter(rule => rule.error);  
+  return rules
+    .map(validator => {
+      if (validator.rule) {
+        return { ...validator.rule(value), ...validator };
+      } else {
+        return validator(value);
+      }
+    })
+    .filter(rule => rule.error);
 };

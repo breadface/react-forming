@@ -8,15 +8,17 @@ Validation Wrapper for React input elements
 
 #### Installation
 
-`npm install --save react-forming`  
-  or  
-`yarn add react-forming`
+```js
+npm install --save react-forming
+  // or  
+yarn add react-forming
+```
 
 #### Usage
-```javascript
+```js
   import React from 'react'
-  import { FormWrapper, Input } from 'react-forming';
-  import {email, required} from 'react-forming/validation';
+  import FormWrapper from 'react-forming';
+  import { email, required } from 'react-forming/validation';
 
   class SimpleForm extends React.Component {
     state = {
@@ -47,13 +49,14 @@ Validation Wrapper for React input elements
               this.setState({value: next});
             }}
             onSubmit={this.handleSubmit}
-          >{({getInputProps, isValid}) =>
+          children={({getInputProps, disabled, hasSubmitted}) => {
+          }
             <React.Fragment>
-              <Input {...getInputProps("email")} />
-              <input {...getInputProps("password")} /> //Works with normal <input />
-              <button disabled={!isValid}></button>
+              <input {...getInputProps("email")} />
+              <input {...getInputProps("password")} />
+              <button disabled={disabled}></button>
             </React.Fragment>
-          }</FormWrapper>
+          />
         </div>
       );
     }
@@ -65,11 +68,11 @@ Validation Wrapper for React input elements
 
 - All validators are 'not required' by default so you need to explicitly add a **required** rule For example
 
-###### Example 1
+###### Displaying validation errors
 
 ```js
 
-  import {email, notRequired, required} from 'react-forming/validation';
+  import {email, notRequired, minLength, required} from 'react-forming/validation';
 
 
   <FormWrapper
@@ -77,46 +80,44 @@ Validation Wrapper for React input elements
       email: [email], //The email field becomes validated only if there's an entry
       confirmEmail: [email, required], //Add the required field for non-empty value validation
       password: [
-        {message: "Password must be a least 6 characters long", rule: password},
-        {message: 'Password field is required', rule: required}
+        { message: "Password must be a least 6 characters long", rule: minLength(6)},
+        { message: 'Password field is required', rule: required}
       ]
-    }({errors, ...rest}) => {
+    }}
+    children={({errors, ...rest}) => {
       const {password} = errors; //an array of errors for the validated field
       return {password.map(value => <div>{value}</div>)}
     }}
   />
 ```
-### Type signatures:  
-FormWrapper
-```js
-    value: Object //This is usually a key value pair of the form fields
-    isValid: Boolean
-    Validator: (value: String) => Boolean
-    getInputProps: (key: String) => { value: String, onChange: (e: SyntheticEvent) => void }
-    children: ({getInputProps: getInputProps, isValid, error: {field: Array<String>}}) => ReactNode
-    onChange: (next: Object) => void
-    validators: { key: Array<Validator> | Validator }
-```
-Input
-```js  
-    value: String,
-    onChange: (e: SyntheticEvent) => void,
-    onFocus: (e: SyntheticEvent) => void,
-    onBlur: (e: SyntheticEvent) => void,
-    label: String,
-    labelStyle: String,
-    errorStyle: String,
-    className: String,
-    isRequired: Boolean,
-    errorMessage: String,
-    errorMessageStyle: String,
-    disabled: Boolean,
-    validations: Array<Validator>
+#### Type signatures:
 
-    //And other valid input fields e,g type, name, placeholder ...etc
+```flow
+ // FormWrapper props
+ type Rule = (value: string) => boolean;
+ type getInputProps = (key: string) => { value: string, onChange: (e: SyntheticEvent) => void };
+
+ {
+  value: {[key: string]: string},
+  disabled: boolean,
+  children: ({getInputProps: getInputProps, disabled, error: {[string]: Array<string>}}) => React.Node,
+  onChange: (next: value) => void,
+  validators: { key: Array<Rule> | Rule }
+  }
 ```
+#### Validation rules:
+
+```js
+  import { notRequired } from 'react-forming/validation';
+
+  export const newValidationRule = notRequired(value => {
+    return { error: Boolean(value) };
+  });
+```
+
+
 ### TODO
- - Add other input type components - Radio, Checkbox etc.
+ - Add input components with validation - Radio, Checkbox etc.
  - Add more custom validation
  - Include testing
  - May add support for flow
