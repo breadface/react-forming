@@ -66,7 +66,7 @@ yarn add react-forming
 
 ### Validation
 
-- All validators are 'not required' by default so you need to explicitly add a **required** rule For example
+- Existing validators are 'not required' by default so you need to explicitly add a **required** rule For example
 
 ###### Displaying validation errors
 
@@ -90,9 +90,9 @@ yarn add react-forming
     }}
   />
 ```
-#### Type signatures:
+#### Type signatures:
 
-```flow
+```js
  // FormWrapper props
  type Rule = (value: string) => boolean;
  type getInputProps = (key: string) => { value: string, onChange: (e: SyntheticEvent) => void };
@@ -105,7 +105,16 @@ yarn add react-forming
   validators: { key: Array<Rule> | Rule }
   }
 ```
-#### Validation rules:
+
+#### Validation Rules:
+ - required - Rule
+ - number - Rule
+ - phoneNumber - (locale: string) => Rule
+ - passwordMatch - (otherPassword: string) => Rule
+ - minLength - (length: number) => Rule
+ - maxLength - (length: number) => Rule
+ 
+#### Creating a validation Rule:
 
 ```js
   import { notRequired } from 'react-forming/validation';
@@ -115,7 +124,6 @@ yarn add react-forming
   });
 ```
 
-
 ### TODO
  - Add input components with validation - Radio, Checkbox etc.
  - Add more custom validation
@@ -124,3 +132,4 @@ yarn add react-forming
 
 ### Contribution
   Feel free to fork the repo and create a pr! :smile:
+
